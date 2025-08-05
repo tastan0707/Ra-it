@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Buse Korkmaz'ın Doğum Günü 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f8cdda, #1d2b64);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-top: 50px;
+    }
+
+    p {
+      font-size: 1.5em;
+    }
+
+    .btn {
+      background-color: white;
+      color: #1d2b64;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      margin-top: 30px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    .celebration {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      width: 40px;
+      height: 60px;
+      background: red;
+      border-radius: 50% 50% 50% 50%;
+      animation: float 6s infinite ease-in;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    #message {
+      display: none;
+      font-size: 2em;
+      margin-top: 40px;
+      animation: fadeIn 2s ease-in forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>İyi ki Doğdun Buse Korkmaz! 💖</h1>
+  <p>Bu butona basınca gökyüzü senin için kutlama yapacak!</p>
+  <button class="btn" onclick="startCelebration()">🎁 Sürprizi Aç</button>
+
+  <div class="celebration" id="celebration">
+    <canvas id="fireworks"></canvas>
+    <div id="message">🎉 Doğum Günün Kutlu Olsun Buse! 🎂</div>
+  </div>
+
+  <script>
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function createBalloon() {
+      const balloon = document.createElement("div");
+      balloon.className = "balloon";
+      balloon.style.left = random(0, 100) + "vw";
+      balloon.style.backgroundColor = "hsl(" + random(0, 360) + ", 70%, 60%)";
+      document.body.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 6000);
+    }
+
+    function startCelebration() {
+      document.getElementById("celebration").style.display = "block";
+      document.getElementById("message").style.display = "block";
+
+      for (let i = 0; i < 30; i++) {
+        setTimeout(createBalloon, i * 300);
+      }
+
+      launchFireworks();
+    }
+
+    function launchFireworks() {
+      const canvas = document.getElementById('fireworks');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let fireworks = [];
+
+      function Firework() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height;
+        this.radius = Math.random() * 2 + 1;
+        this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%,50%)';
+        this.vx = Math.random() * 6 - 3;
+        this.vy = Math.random() * -6 - 3;
+        this.alpha = 1;
+
+        this.update = function() {
+          this.x += this.vx;
+          this.y += this.vy;
+          this.alpha -= 0.01;
+        };
+
+        this.draw = function() {
+          ctx.globalAlpha = this.alpha;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        };
+      }
+
+      function animate() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (Math.random() < 0.1) {
+          for (let i = 0; i < 10; i++) {
+            fireworks.push(new Firework());
+          }
+        }
+
+        fireworks.forEach((f, i) => {
+          f.update();
+          f.draw();
+          if (f.alpha <= 0) fireworks.splice(i, 1);
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+  </script>
+</body>
+</html>
